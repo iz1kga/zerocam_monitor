@@ -240,6 +240,7 @@ class SystemMonitor:
         mem_values = [s['memory']['percent'] for s in self.samples]
         
         aggregated = {
+            'device_id': self.config.device_id,
             'timestamp': datetime.now().isoformat(),
             'period_seconds': self.config.check_period_minutes * 60,
             'samples_count': len(self.samples),

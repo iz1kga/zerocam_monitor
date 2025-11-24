@@ -30,10 +30,18 @@ Content-Length: 1234
 
 ## 📦 Request Payload
 
-### Struttura Completa
-
-```json
+### Struttura Complet    # Ricevi dati
+    data = request.get_json()
+    
+    # Identifica il dispositivo
+    device_id = data.get('device_id', 'unknown')
+    
+    # Salva nel database o processa
+    print(f"Ricevuti dati da dispositivo '{device_id}': {data['timestamp']}")
+    
+    # Rispostason
 {
+    "device_id": "webcam-001",
     "timestamp": "2025-11-24T10:30:00.123456",
     "period_seconds": 60,
     "samples_count": 12,
@@ -81,6 +89,7 @@ Content-Length: 1234
 
 | Campo | Tipo | Descrizione |
 |-------|------|-------------|
+| `device_id` | string | **Identificatore univoco del dispositivo/webcam** (es: "webcam-villar", "cam-001") |
 | `timestamp` | string (ISO 8601) | Data e ora dell'invio dei dati aggregati |
 | `period_seconds` | integer | Durata del periodo di controllo in secondi |
 | `samples_count` | integer | Numero totale di campioni raccolti nel periodo |
@@ -278,6 +287,7 @@ Statistiche di utilizzo RAM aggregate sul periodo di controllo.
 
 ```json
 {
+    "device_id": "webcam-villar-focchiardo",
     "timestamp": "2025-11-24T15:30:45.123456",
     "period_seconds": 60,
     "samples_count": 12,
@@ -321,6 +331,7 @@ Statistiche di utilizzo RAM aggregate sul periodo di controllo.
 
 ```json
 {
+    "device_id": "webcam-001",
     "timestamp": "2025-11-24T15:35:45.654321",
     "period_seconds": 300,
     "samples_count": 60,
@@ -364,6 +375,7 @@ Statistiche di utilizzo RAM aggregate sul periodo di controllo.
 
 ```json
 {
+    "device_id": "zerocam-portable",
     "timestamp": "2025-11-24T15:40:00.789012",
     "period_seconds": 60,
     "samples_count": 12,
@@ -463,8 +475,13 @@ Errore del server.
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Raspberry Pi Monitoring Data",
   "type": "object",
-  "required": ["timestamp", "period_seconds", "samples_count", "disk", "ethernet", "wifi", "cpu", "memory"],
+  "required": ["device_id", "timestamp", "period_seconds", "samples_count", "disk", "ethernet", "wifi", "cpu", "memory"],
   "properties": {
+    "device_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique device/webcam identifier"
+    },
     "timestamp": {
       "type": "string",
       "format": "date-time",
@@ -594,8 +611,11 @@ app.post('/monitoring', (req, res) => {
     // Ottieni dati
     const data = req.body;
     
+    // Identifica il dispositivo
+    const deviceId = data.device_id || 'unknown';
+    
     // Salva nel database o processa
-    console.log(`Ricevuti dati da Raspberry Pi: ${data.timestamp}`);
+    console.log(`Ricevuti dati da dispositivo '${deviceId}': ${data.timestamp}`);
     
     // Risposta
     res.json({
@@ -642,8 +662,11 @@ if (!$data) {
     exit;
 }
 
+// Identifica il dispositivo
+$device_id = $data['device_id'] ?? 'unknown';
+
 // Salva nel database o processa
-error_log("Ricevuti dati da Raspberry Pi: " . $data['timestamp']);
+error_log("Ricevuti dati da dispositivo '$device_id': " . $data['timestamp']);
 
 // Risposta
 http_response_code(200);
@@ -663,6 +686,7 @@ curl -X POST https://api.example.com/monitoring \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -d '{
+    "device_id": "webcam-test-001",
     "timestamp": "2025-11-24T15:30:45.123456",
     "period_seconds": 60,
     "samples_count": 12,
@@ -706,8 +730,12 @@ curl -X POST https://api.example.com/monitoring \
 
 ## 📌 Note Importanti
 
-1. **Timestamp**: Sempre in formato ISO 8601 con timezone
-2. **Campi Null**: Alcuni campi possono essere `null` se non disponibili
+1. **Device ID**: Identifica univocamente ogni Raspberry Pi/webcam nel sistema
+   - Usa nomi descrittivi: "webcam-villar", "cam-sala-01", "zerocam-mobile"
+   - Configurabile in `config.json` con il parametro `device_id`
+   - Essenziale per distinguere i dati di dispositivi multipli
+2. **Timestamp**: Sempre in formato ISO 8601 con timezone
+3. **Campi Null**: Alcuni campi possono essere `null` se non disponibili
 3. **Unità di Misura**: 
    - Disco: GB (Gigabyte)
    - RAM: MB (Megabyte)

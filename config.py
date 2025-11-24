@@ -12,6 +12,7 @@ class Config:
     """Gestisce la configurazione del sistema di monitoraggio"""
     
     DEFAULT_CONFIG = {
+        'device_id': 'raspberry-pi-001',  # ID univoco del dispositivo/webcam
         'check_period_minutes': 1,  # Periodo di controllo in minuti
         'sample_interval_seconds': 5,  # Intervallo tra i campioni in secondi
         'reboot_timeout_minutes': 15,  # Minuti senza internet prima del riavvio
@@ -73,6 +74,11 @@ class Config:
             print(f"Configurazione salvata in: {self.config_file}")
         except Exception as e:
             print(f"Errore nel salvataggio della configurazione: {e}")
+    
+    @property
+    def device_id(self) -> str:
+        """ID univoco del dispositivo"""
+        return self.config['device_id']
     
     @property
     def check_period_minutes(self) -> int:

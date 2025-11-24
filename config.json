@@ -1,4 +1,5 @@
 {
+    "device_id": "raspberry-pi-001",
     "check_period_minutes": 1,
     "sample_interval_seconds": 5,
     "reboot_timeout_minutes": 15,

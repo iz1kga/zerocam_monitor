@@ -45,6 +45,7 @@ File `/etc/raspberry-monitor/config.json`:
 
 ```json
 {
+    "device_id": "webcam-001",
     "api_url": "https://api.tuoserver.com/monitoring",
     "api_bearer_token": "YOUR_TOKEN_HERE",
     "check_period_minutes": 1,
@@ -54,6 +55,9 @@ File `/etc/raspberry-monitor/config.json`:
 ```
 
 **Parametri:**
+- `device_id`: **ID univoco del dispositivo/webcam** (es: "webcam-villar", "cam-001")
+- `api_url`: URL dell'API REST
+- `api_bearer_token`: Token di autenticazione
 - `check_period_minutes`: Ogni quanto inviare i dati (default: 1)
 - `sample_interval_seconds`: Intervallo campionamento (default: 5)
 - `reboot_timeout_minutes`: Minuti senza Internet prima del riboot (default: 15)
@@ -73,6 +77,7 @@ Content-Type: application/json
 
 ```json
 {
+    "device_id": "webcam-001",
     "timestamp": "2025-11-24T10:30:00.123456",
     "period_seconds": 60,
     "samples_count": 12,
@@ -121,6 +126,7 @@ Content-Type: application/json
 
 | Campo | Tipo | Descrizione |
 |-------|------|-------------|
+| `device_id` | string | **ID univoco del dispositivo/webcam** |
 | `timestamp` | string | ISO 8601 timestamp dell'invio |
 | `period_seconds` | int | Durata periodo di raccolta dati |
 | `samples_count` | int | Numero campioni raccolti |
@@ -168,9 +174,10 @@ def receive_monitoring():
     
     # Ricevi dati
     data = request.get_json()
-    print(f"Dati ricevuti: {data['timestamp']}")
+    device_id = data.get('device_id', 'unknown')
+    print(f"Dati ricevuti da {device_id}: {data['timestamp']}")
     
-    # Salva nel database...
+    # Salva nel database usando device_id come chiave...
     
     return jsonify({'status': 'success'}), 200
 ```
