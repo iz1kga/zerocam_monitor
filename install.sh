@@ -1,12 +1,5 @@
 #!/bin/bash
-# Script di installazione per il servizio di echo "7. Installazione del servizio systemd..."
-cp raspberry-monitor.service /etc/systemd/system/
-
-echo "8. Ricaricamento della configurazione systemd..."
-systemctl daemon-reload
-
-echo "9. Abilitazione del servizio all'avvio..."
-systemctl enable raspberry-monitor.serviceggio Raspberry Pi
+# Script di installazione per il servizio di monitoraggio Raspberry Pi
 
 set -e
 
@@ -36,14 +29,15 @@ apt-get update
 apt-get install -y python3 python3-pip python3-venv wireless-tools
 
 echo "3. Copia dei file del programma..."
-cp monitor.py "$INSTALL_DIR/"
-cp config.py "$INSTALL_DIR/"
-cp requirements.txt "$INSTALL_DIR/"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cp "$SCRIPT_DIR/monitor.py" "$INSTALL_DIR/"
+cp "$SCRIPT_DIR/config.py" "$INSTALL_DIR/"
+cp "$SCRIPT_DIR/requirements.txt" "$INSTALL_DIR/"
 
 # Copia il file di configurazione se non esiste già
 if [ ! -f "$CONFIG_DIR/config.json" ]; then
     echo "4. Creazione file di configurazione..."
-    cp config.json "$CONFIG_DIR/config.json"
+    cp "$SCRIPT_DIR/config.json" "$CONFIG_DIR/config.json"
     echo "   IMPORTANTE: Modifica $CONFIG_DIR/config.json con le tue impostazioni!"
 else
     echo "4. File di configurazione esistente mantenuto"
@@ -63,12 +57,12 @@ pip install -r requirements.txt
 deactivate
 
 echo "7. Installazione del servizio systemd..."
-cp raspberry-monitor.service /etc/systemd/system/
+cp "$SCRIPT_DIR/raspberry-monitor.service" /etc/systemd/system/
 
-echo "7. Ricaricamento della configurazione systemd..."
+echo "8. Ricaricamento della configurazione systemd..."
 systemctl daemon-reload
 
-echo "8. Abilitazione del servizio all'avvio..."
+echo "9. Abilitazione del servizio all'avvio..."
 systemctl enable raspberry-monitor.service
 
 echo
