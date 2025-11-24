@@ -1,0 +1,8 @@
+{
+    "check_period_minutes": 1,
+    "sample_interval_seconds": 5,
+    "reboot_timeout_minutes": 15,
+    "api_url": "https://api.example.com/monitoring",
+    "api_bearer_token": "YOUR_BEARER_TOKEN_HERE",
+    "log_dir": "/var/log/raspberry-monitor"
+}

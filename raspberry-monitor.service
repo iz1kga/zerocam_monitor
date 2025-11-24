@@ -1,0 +1,21 @@
+[Unit]
+Description=Raspberry Pi System Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/raspberry-monitor
+ExecStart=/opt/raspberry-monitor/venv/bin/python /opt/raspberry-monitor/monitor.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Variabili d'ambiente (opzionale)
+Environment="PYTHONUNBUFFERED=1"
+Environment="VIRTUAL_ENV=/opt/raspberry-monitor/venv"
+
+[Install]
+WantedBy=multi-user.target
